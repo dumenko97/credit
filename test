@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розрахунок виплат по кредиту</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .grid label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input {
+            padding: 10px;
+            font-size: 14px;
+            width: 100%;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Кредитний калькулятор</h1>
+    <div class="grid">
+        <div>
+            <label for="bank1-name">Назва банку 1</label>
+            <input type="text" id="bank1-name" placeholder="Наприклад, Монобанк">
+            <label for="bank1-rate">Ставка (%/місяць)</label>
+            <input type="number" id="bank1-rate" placeholder="Наприклад, 1.5">
+            <label for="bank1-payment">Внесення (грн)</label>
+            <input type="number" id="bank1-payment" placeholder="Сума на місяць">
+        </div>
+        <div>
+            <label for="bank2-name">Назва банку 2</label>
+            <input type="text" id="bank2-name" placeholder="Наприклад, ПриватБанк">
+            <label for="bank2-rate">Ставка (%/місяць)</label>
+            <input type="number" id="bank2-rate" placeholder="Наприклад, 2.0">
+            <label for="bank2-payment">Внесення (грн)</label>
+            <input type="number" id="bank2-payment" placeholder="Сума на місяць">
+        </div>
+        <div>
+            <label for="bank3-name">Назва банку 3</label>
+            <input type="text" id="bank3-name" placeholder="Наприклад, Альфа-Банк">
+            <label for="bank3-rate">Ставка (%/місяць)</label>
+            <input type="number" id="bank3-rate" placeholder="Наприклад, 1.8">
+            <label for="bank3-payment">Внесення (грн)</label>
+            <input type="number" id="bank3-payment" placeholder="Сума на місяць">
+        </div>
+    </div>
+    <button onclick="calculatePayments()">Розрахувати</button>
+    <div class="result" id="result"></div>
+
+    <script>
+        function calculatePayments() {
+            // Отримання даних для банків
+            const banks = [
+                {
+                    name: document.getElementById("bank1-name").value,
+                    rate: parseFloat(document.getElementById("bank1-rate").value) / 100 || 0,
+                    payment: parseFloat(document.getElementById("bank1-payment").value) || 0
+                },
+                {
+                    name: document.getElementById("bank2-name").value,
+                    rate: parseFloat(document.getElementById("bank2-rate").value) / 100 || 0,
+                    payment: parseFloat(document.getElementById("bank2-payment").value) || 0
+                },
+                {
+                    name: document.getElementById("bank3-name").value,
+                    rate: parseFloat(document.getElementById("bank3-rate").value) / 100 || 0,
+                    payment: parseFloat(document.getElementById("bank3-payment").value) || 0
+                }
+            ];
+
+            let results = [];
+            banks.forEach((bank, index) => {
+                if (bank.payment > 0 && bank.rate > 0) {
+                    let debt = 10000; // Початковий борг (можна змінити)
+                    let months = 0;
+
+                    while (debt > 0) {
+                        months++;
+                        debt += debt * bank.rate; // Нарахування відсотків
+                        debt -= bank.payment; // Зняття платежу
+                        if (months > 1200) {
+                            results.push(`${bank.name}: Неможливо погасити борг`);
+                            return;
+                        }
+                    }
+
+                    const endDate = new Date();
+                    endDate.setMonth(endDate.getMonth() + months);
+                    results.push(`${bank.name}: Погашення через ${months} місяців (${endDate.toLocaleString("uk-UA", { year: "numeric", month: "long" })})`);
+                }
+            });
+
+            document.getElementById("result").innerHTML = results.join("<br>");
+        }
+    </script>
+</body>
+</html>
